@@ -1,4 +1,4 @@
---- main
+--- main for mobile
 
 --- real script
 
@@ -468,25 +468,9 @@ end
 game.Players.PlayerAdded:Connect(playerAdded)
 end)
 
-mainSection:Toggle({
-    Title = "fly",
-    Default = true
-    },
-    function(val)
-        flying = not flying
-        if val then
-            wait(5)
-            sFLY(true)
-        else
-            NOFLY()
-        end
-    end
-)
-
-
-mainSection:Toggle({
-    Title = "autofarm",
-    Default = true
+mainSection:Keybind({
+    Title = "sky Keybind",
+    Default = Enum.KeyCode.L
     },
     function(val)
         for i,v2 in pairs(getgc(true)) do
@@ -545,9 +529,9 @@ mainSection:Toggle({
     end
 )
 
-mainSection:Toggle({
-    Title = "autospawn",
-    Default = true
+mainSection:Keybind({
+    Title = "Spawn Keybind",
+    Default = Enum.KeyCode.J
     },
     function(val)
         while wait(0.2) do
@@ -556,7 +540,16 @@ mainSection:Toggle({
     end
 )
 
-mainSection:Toggle({
+playerSection:Toggle({
+    Title = "Spam Jump",
+    Default = false
+    },
+    function(val)
+        print("hi")
+    end
+)
+
+playerSection:Toggle({
     Title = "No Fall Damage",
     Default = true
     },
@@ -594,14 +587,14 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "No Utility Damage",
-    Default = true
+    Default = false
     },
     function(val)
         antidamage = val
     end
 )
 
-mainSection:Toggle({
+playerSection:Toggle({
     Title = "Auto Spawn",
     Default = false
     },
@@ -716,7 +709,7 @@ playerSection:Toggle({
     end
 )
 
-playerSection:Toggle({
+mainSection:Toggle({
     Title = "Fly",
     Default = false
     },
@@ -730,7 +723,7 @@ playerSection:Toggle({
     end
 )
 
-playerSection:Keybind({
+mainSection:Keybind({
     Title = "Fly Keybind",
     Default = Enum.KeyCode.K
     },
@@ -944,61 +937,7 @@ CombatSilentaimSection:Toggle({
     Title = "Auto farm (ALT)",
     Default = false
     },
-    function(val)
-        for i,v2 in pairs(getgc(true)) do
-            if val then
-                while task.wait(3) do
-                    if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-                        wait(0.2)
-                        local player = game.Players.LocalPlayer
-                        local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                        local function changeCFrameY(newY)
-                            local currentCFrame = humanoidRootPart.CFrame
-                            local position = currentCFrame.Position
-                            local rotation = currentCFrame - position
-                            local newPosition = Vector3.new(position.X, newY, position.Z)
-                            local newCFrame = CFrame.new(newPosition) * rotation
-                            humanoidRootPart.CFrame = newCFrame
-                        end
-                        changeCFrameY(-200)
-                        if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-						    function TP(gotoCFrame)
-							    pcall(function()
-								    game.Players.LocalPlayer.Character.Humanoid.Sit = false
-							    end)
-							    if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
-								    pcall(function() 
-									    tween:Cancel()
-								    end)
-								    game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
-							    else
-								    local tween_s = game:service"TweenService"
-								    local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
-								    local tween, err = pcall(function()
-									    tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
-									    tween:Play()
-								    end)
-								    if not tween then return err end
-							    end
-						    end
-						
-						    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
-                            wait(2)
-                            local baseplate = Instance.new("Part")
-                            baseplate.Parent = workspace
-                            baseplate.Size = Vector3.new(1000,0.5,1000)
-                            baseplate.Anchored = true
-                            baseplate.Name = "Baseplate"
-                            baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
-                        end
-                    else
-                        wait(2)
-                    end
-                end
-            end
-        end
-    end
+    print(hi)
 )
 
 CombatSilentaimSection:Toggle({
