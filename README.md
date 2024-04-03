@@ -1,4 +1,4 @@
---- main for mobile
+--- main
 
 --- real script
 
@@ -469,7 +469,70 @@ game.Players.PlayerAdded:Connect(playerAdded)
 end)
 
 mainSection:Toggle({
-    Title = "Autofarm ALT",
+    Title = "Inf Parry",
+    Default = false
+    },
+    function(val)
+        for i,v in pairs(getgc(true)) do
+            if type(v) == "table" and rawget(v, "PARRY_COOLDOWN_IN_SECONDS") and rawget(v, "PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY") then
+                if val then
+                    v.PARRY_COOLDOWN_IN_SECONDS = 0
+                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0
+                else
+                    v.PARRY_COOLDOWN_IN_SECONDS = 3
+                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0.33
+                end
+            end
+        end
+    end
+)
+
+
+mainSection:Toggle({
+    Title = "Spam Jump",
+    Default = false
+    },
+    function(val)
+        while wait(0.2) do
+            game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game) 
+        end
+    end
+)
+
+mainSection:Toggle({
+    Title = "FLY NEW",
+    Default = false
+    },
+    function(val)
+        flying = not flying
+        if val then
+            sFLY(true)
+        else
+            NOFLY()
+        end
+    end
+)
+
+mainSection:Toggle({
+    Title = "No Fall Damage",
+    Default = true
+    },
+    function(val)
+        nofall = val
+    end
+)
+
+mainSection:Toggle({
+    Title = "Stomp Aura",
+    Default = false
+    },
+    function(val)
+        stompaura = val
+    end
+)
+
+mainSection:Toggle({
+    Title = "Teleport",
     Default = false
     },
     function(val)
@@ -523,68 +586,6 @@ mainSection:Toggle({
                     else
                         wait(2)
                     end
-                end
-            end
-        end
-    end
-)
-
-
-mainSection:Toggle({
-    Title = "Spam Jump",
-    Default = false
-    },
-    function(val)
-        while wait(0.2) do
-            game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game) 
-        end
-    end
-)
-
-mainSection:Toggle({
-    Title = "FLY",
-    Default = false
-    },
-    function(val)
-        flying = not flying
-        if val then
-            sFLY(true)
-        else
-            NOFLY()
-        end
-    end
-)
-
-mainSection:Toggle({
-    Title = "No Fall Damage",
-    Default = true
-    },
-    function(val)
-        nofall = val
-    end
-)
-
-mainSection:Toggle({
-    Title = "Stomp Aura",
-    Default = false
-    },
-    function(val)
-        stompaura = val
-    end
-)
-
-mainSection:Toggle({
-    Title = "No Dash Cooldown",
-    Default = false
-    },
-    function(val)
-        for i,v2 in pairs(getgc(true)) do
-            if typeof(v2) == "table" and rawget(v2, "DASH_COOLDOWN") then
-                if val then
-                    v2.DASH_COOLDOWN = 0
-                else
-                    v2.DASH_COOLDOWN = 3
-
                 end
             end
         end
@@ -785,6 +786,59 @@ CombatKillauraSection:Toggle({
     Title = "Reach (broken)",
     Default = false
     },
+    function(val)
+        Reaching = val
+        if val == false then return end
+        local character = game.Players.LocalPlayer.Character
+        local torso = character.Torso
+        local rightarm = character["Right Arm"]
+        local rightshoulder = torso["Right Shoulder"]
+        if rightshoulder and rightshoulder.Enabled == true then
+            local rightshoulderclone = rightshoulder:Clone()
+            rightshoulderclone.Enabled = false
+            rightshoulder:Destroy()
+            rightshoulderclone.Parent = torso
+        end
+    
+        for i,v in pairs(game.Players.LocalPlayer.Backpack:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.Massless = true
+            end
+        end
+        if rightarm:FindFirstChild("RagdollBallSocket") then
+            rightarm.RagdollBallSocket.Enabled = false
+        end
+        while Reaching do
+            sethiddenproperty(rightarm,"AssemblyLinearVelocity",Vector3.new(100,100,100))
+            rightarm.Velocity = Vector3.new(100,100,100)
+            if torso:FindFirstChild("Right Shoulder") then
+                local rightarm = character["Right Arm"]
+                local rightshoulder = torso["Right Shoulder"]
+    
+                local rightshoulderclone = rightshoulder:Clone()
+                rightshoulderclone.Enabled = false
+                rightshoulder:Destroy()
+                rightshoulderclone.Parent = torso
+            end
+    
+            local target = getClosest()
+
+            -- if reachchoice == "closest to player" then
+            --     target = getClosest()
+            -- elseif reachchoice == "closest to mouse" then
+            --     target = getClosestToMouse()
+            --     bruh.Adornee = target.Character
+            -- else
+            --     target = getClosest()
+            -- end
+            if target.Character:FindFirstChild("Head") and (character.Head.Position - target.Character.Head.Position).magnitude < 100 then
+                rightarm.CFrame = target.Character.Head.CFrame * CFrame.new(math.random(-0,0),0,0)
+            elseif character:FindFirstChild("Head") then
+                rightarm.CFrame = character.Head.CFrame * CFrame.new(math.random(-0,0),0,0)
+            end
+            game:GetService("RunService").Heartbeat:wait()
+        end
+    end
 )
 
 
@@ -813,30 +867,77 @@ CombatSilentaimSection:Slider({
     Min = 0,
     Max = 100
     },
+    function(v)
+        silentaimhitchance = v
+    end
 )
 
 CombatSilentaimSection:Toggle({
     Title = "Wallbang",
     Default = false
     },
+    function(val)
+        if val then
+            game.CollectionService:AddTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')
+        else
+            game.CollectionService:RemoveTag(game:GetService("Workspace").Map,'RANGED_CASTER_IGNORE_LIST')
+        end
+    end
 )
 
 CombatSilentaimSection:Toggle({
     Title = "No Spread",
     Default = false
     },
+    function(val)
+        nospread = val
+    end
 )
 
 CombatSilentaimSection:Toggle({
     Title = "No Recoil",
     Default = false
     },
+    function(val)
+        for i,v2 in pairs(getgc(true)) do
+            if typeof(v2) == "table" and rawget(v2, "recoilAmount") then
+                if val then
+                    v2.recoilAmount = 0
+                    v2.recoilXMin = 0
+                    v2.recoilXMax = 0
+                    v2.recoilYMin = 0
+                    v2.recoilYMax = 0
+                    v2.recoilZMin = 0
+                    v2.recoilZMax = 0
+                else
+                    v2.recoilAmount = 35
+                    v2.recoilXMin = 1.25
+                    v2.recoilXMax = 1.75
+                    v2.recoilYMin = -1.5
+                    v2.recoilYMax = 1.5
+                    v2.recoilZMin = -1.5
+                    v2.recoilZMax = 1.5
+                end
+            end
+        end
+    end
 )
 
 CombatSilentaimSection:Toggle({
     Title = "No Gravity",
     Default = false
     },
+    function(val)
+        for i,v2 in pairs(getgc(true)) do
+            if typeof(v2) == "table" and rawget(v2, "recoilAmount") then
+                if val then
+                    v2.gravity = Vector3.new(0,0,0)
+                else
+                    v2.gravity = Vector3.new(0, -10, 0)
+                end
+            end
+        end
+    end
 )
 
 CombatSilentaimSection:Toggle({
@@ -1291,6 +1392,62 @@ for i,v in pairs(getgc(true)) do
     end
 end
 
+
+task.spawn(function()
+    while task.wait(KillAuraHitCooldown) do
+        -- ty len for the arrow redirection
+        -- really basic kill aura
+        -- lags alot but works most of the time
+        -- ty len
+        if killaura then
+            pcall(function()
+                table.foreach(Players.LocalPlayer.Backpack:GetChildren(), function(i,v)
+                    if v:IsA("Tool") and v:FindFirstChild("Hitboxes") then
+                        weapon = v
+                    end
+                end)
+                local c_player = getClosest()
+                if c_player.Character:FindFirstChild("SemiTransparentShield").Transparency == 1 then
+                    swingremote:FireServer(weapon, 1)
+                    hitremote:FireServer(weapon,c_player.Character:FindFirstChild("HumanoidRootPart"),weapon.Hitboxes.Hitbox,c_player.Character:FindFirstChild("HumanoidRootPart").Position)
+                    hitremote:FireServer(weapon,c_player.Character:FindFirstChild("HumanoidRootPart"),weapon.Hitboxes.Hitbox,c_player.Character:FindFirstChild("HumanoidRootPart").Position)
+                end
+            end)
+        end
+
+        -- silent aim pog
+
+        if silentaim then
+            pcall(function()
+                local bow = Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+                if closest then
+                    bruh.Adornee = getClosestToMouse().Character
+                end
+                if ARROW then
+                    if closest then
+                        if (ARROW.Position - closest.Character.HumanoidRootPart.Position).Magnitude <= 15 then
+                            if silentaimhitchance == 100 then
+                                firehit(closest.Character,ARROW)
+                                ARROW = nil
+                                shot = false
+                                print("hit them (i think)")
+                            else
+                                local didIHitThat = calculateArrowHitChance(silentaimhitchance)
+                                if didIHitThat then
+                                    firehit(closest.Character,ARROW)
+                                    ARROW = nil
+                                    shot = false
+                                    print("hit them (i think)")
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
 -- the main loop for shit
 task.spawn(function()
     RunService.Stepped:Connect(function()
@@ -1503,4 +1660,4 @@ while true do
 		
 		wait(TimeBetweenNotifications)
 	end
-endw
+end
