@@ -490,7 +490,7 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "Spam Jump",
-    Default = false
+    Default = true
     },
     function(val)
         while wait(0.2) do
