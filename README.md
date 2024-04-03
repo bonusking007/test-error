@@ -381,97 +381,159 @@ local miscSection = miscMain:Section("BROKEN", "Left")
 local ESPMain = ESP:Button("ESP", "rbxassetid://7743875962")
 local ESPSection = ESPMain:Section("ESP", "Left")
 
-mainSection:Toggle({
-    Title = "autofarm",
-    Default = true
+mainSection:Button({
+    Title = "Protect void",
+    ButtonName = "Baseplate",
     },
-    function(val)
-        for i,v2 in pairs(getgc(true)) do
-            if val then
-                while task.wait(3) do
-                    if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-                        wait(0.2)
-                        local player = game.Players.LocalPlayer
-                        local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                        local function changeCFrameY(newY)
-                            local currentCFrame = humanoidRootPart.CFrame
-                            local position = currentCFrame.Position
-                            local rotation = currentCFrame - position
-                            local newPosition = Vector3.new(position.X, newY, position.Z)
-                            local newCFrame = CFrame.new(newPosition) * rotation
-                            humanoidRootPart.CFrame = newCFrame
-                        end
-                        changeCFrameY(-200)
-                        if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-						    function TP(gotoCFrame)
-							    pcall(function()
-								    game.Players.LocalPlayer.Character.Humanoid.Sit = false
-							    end)
-							    if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
-								    pcall(function() 
-									    tween:Cancel()
-								    end)
-								    game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
-							    else
-								    local tween_s = game:service"TweenService"
-								    local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
-								    local tween, err = pcall(function()
-									    tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
-									    tween:Play()
-								    end)
-								    if not tween then return err end
-							    end
-						    end
-						
-						    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
-                            wait(2)
-                            local baseplate = Instance.new("Part")
-                            baseplate.Parent = workspace
-                            baseplate.Size = Vector3.new(1000,0.5,1000)
-                            baseplate.Anchored = true
-                            baseplate.Name = "Baseplate"
-                            baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
-                        end
-                    else
-                        wait(2)
-                    end
-                end
-            end
-        end
+    function(v)
+        local baseplate = Instance.new("Part")
+        baseplate.Parent = workspace
+        baseplate.Size = Vector3.new(1000,0.5,1000)
+        baseplate.Anchored = true
+        baseplate.Name = "Baseplate"
+        baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
     end
 )
 
-mainSection:Toggle({
-    Title = "FLY 2",
-    Default = true
+mainSection:Button({
+    Title = "Auto Parry",
+    ButtonName = "Enable",
     },
-    function(val)
-        flying = not flying
-        if val then
-            wait(5)
-            sFLY(true)
-        else
-            NOFLY()
-        end
-    end
-)
+    function(v)
+
+	local lp = game.Players.LocalPlayer
+
+local animationInfo = {}
+
+function getInfo(id)
+  local success, info = pcall(function()
+      return game:GetService("MarketplaceService"):GetProductInfo(id)
+  end)
+  if success then
+      return info
+  end
+  return {Name=''}
+end
+function block(player)
+  keypress(0x46)
+  wait()
+  keyrelease(0x46)
+end
+
+local AnimNames = {
+  'Slash',
+  'Swing',
+  'Sword'
+}
+
+function playerAdded(v)
+    local function charadded(char)
+      local humanoid = char:WaitForChild("Humanoid", 5)
+      if humanoid then
+          humanoid.AnimationPlayed:Connect(function(track)
+              local info = animationInfo[track.Animation.AnimationId]
+              if not info then
+                  info = getInfo(tonumber(track.Animation.AnimationId:match("%d+")))
+                  animationInfo[track.Animation.AnimationId] = info
+              end
+             
+              if (lp.Character and lp.Character:FindFirstChild("Head") and v.Character:FindFirstChild("Head")) then
+                  local mag = (v.Character.Head.Position - lp.Character.Head.Position).Magnitude
+                  if mag < 15  then
+                     
+                      for _, animName in pairs(AnimNames) do
+                          if info.Name:match(animName) then
+                              pcall(block, v)
+                          end
+                      end
+                     
+                  end
+              end
+          end)
+      end
+  end
+ 
+  if v.Character then
+      charadded(v.Character)
+  end
+  v.CharacterAdded:Connect(charadded)
+end
+
+for i,v in pairs(game.Players:GetPlayers()) do
+   if v ~= lp then
+       playerAdded(v)
+   end
+end
+
+game.Players.PlayerAdded:Connect(playerAdded)
+end)
 
 mainSection:Toggle({
     Title = "Inf Parry",
     Default = false
     },
     function(val)
-        for i,v in pairs(getgc(true)) do
-            if type(v) == "table" and rawget(v, "PARRY_COOLDOWN_IN_SECONDS") and rawget(v, "PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY") then
-                if val then
-                    v.PARRY_COOLDOWN_IN_SECONDS = 0
-                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0
-                else
-                    v.PARRY_COOLDOWN_IN_SECONDS = 3
-                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0.33
+        flying = not flying
+        if val then
+            wait(5)
+            sFLY(true)
+            function(val)
+                for i,v2 in pairs(getgc(true)) do
+                    if val then
+                        while task.wait(3) do
+                            if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+                                wait(0.2)
+                                local player = game.Players.LocalPlayer
+                                local character = player.Character or player.CharacterAdded:Wait()
+                                local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                                local function changeCFrameY(newY)
+                                    local currentCFrame = humanoidRootPart.CFrame
+                                    local position = currentCFrame.Position
+                                    local rotation = currentCFrame - position
+                                    local newPosition = Vector3.new(position.X, newY, position.Z)
+                                    local newCFrame = CFrame.new(newPosition) * rotation
+                                    humanoidRootPart.CFrame = newCFrame
+                                end
+                                changeCFrameY(-200)
+                                if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+                                    function TP(gotoCFrame)
+                                        pcall(function()
+                                            game.Players.LocalPlayer.Character.Humanoid.Sit = false
+                                        end)
+                                        if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
+                                            pcall(function() 
+                                                tween:Cancel()
+                                            end)
+                                            game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
+                                        else
+                                            local tween_s = game:service"TweenService"
+                                            local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
+                                            local tween, err = pcall(function()
+                                                tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
+                                                tween:Play()
+                                            end)
+                                            if not tween then return err end
+                                        end
+                                    end
+                                
+                                    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
+                                    wait(2)
+                                    local baseplate = Instance.new("Part")
+                                    baseplate.Parent = workspace
+                                    baseplate.Size = Vector3.new(1000,0.5,1000)
+                                    baseplate.Anchored = true
+                                    baseplate.Name = "Baseplate"
+                                    baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
+                                end
+                            else
+                                wait(2)
+                            end
+                        end
+                    end
                 end
             end
+        else
+            NOFLY()
         end
     end
 )
@@ -479,7 +541,7 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "Spam Jump",
-    Default = true
+    Default = false
     },
     function(val)
         while wait(0.2) do
@@ -489,13 +551,12 @@ mainSection:Toggle({
 )
 
 mainSection:Toggle({
-    Title = "FLY NEW",
-    Default = true
+    Title = "FLY",
+    Default = false
     },
     function(val)
         flying = not flying
         if val then
-            wait(10)
             sFLY(true)
         else
             NOFLY()
@@ -522,60 +583,17 @@ mainSection:Toggle({
 )
 
 mainSection:Toggle({
-    Title = "Teleport",
-    Default = true
+    Title = "No Dash Cooldown",
+    Default = false
     },
     function(val)
         for i,v2 in pairs(getgc(true)) do
-            if val then
-                while task.wait(3) do
-                    if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-                        wait(0.2)
-                        local player = game.Players.LocalPlayer
-                        local character = player.Character or player.CharacterAdded:Wait()
-                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-                        local function changeCFrameY(newY)
-                            local currentCFrame = humanoidRootPart.CFrame
-                            local position = currentCFrame.Position
-                            local rotation = currentCFrame - position
-                            local newPosition = Vector3.new(position.X, newY, position.Z)
-                            local newCFrame = CFrame.new(newPosition) * rotation
-                            humanoidRootPart.CFrame = newCFrame
-                        end
-                        changeCFrameY(-200)
-                        if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
-						    function TP(gotoCFrame)
-							    pcall(function()
-								    game.Players.LocalPlayer.Character.Humanoid.Sit = false
-							    end)
-							    if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
-								    pcall(function() 
-									    tween:Cancel()
-								    end)
-								    game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
-							    else
-								    local tween_s = game:service"TweenService"
-								    local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
-								    local tween, err = pcall(function()
-									    tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
-									    tween:Play()
-								    end)
-								    if not tween then return err end
-							    end
-						    end
-						
-						    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
-                            wait(2)
-                            local baseplate = Instance.new("Part")
-                            baseplate.Parent = workspace
-                            baseplate.Size = Vector3.new(1000,0.5,1000)
-                            baseplate.Anchored = true
-                            baseplate.Name = "Baseplate"
-                            baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
-                        end
-                    else
-                        wait(2)
-                    end
+            if typeof(v2) == "table" and rawget(v2, "DASH_COOLDOWN") then
+                if val then
+                    v2.DASH_COOLDOWN = 0
+                else
+                    v2.DASH_COOLDOWN = 3
+
                 end
             end
         end
