@@ -381,7 +381,7 @@ local miscSection = miscMain:Section("BROKEN", "Left")
 local ESPMain = ESP:Button("ESP", "rbxassetid://7743875962")
 local ESPSection = ESPMain:Section("ESP", "Left")
 
-mainSection:Button({
+mainSection:Toggle({
     Title = "autofarm",
     Default = true
     },
@@ -442,8 +442,8 @@ mainSection:Button({
     end
 )
 
-mainSection:toggle({
-    Title = "FLY NEW",
+mainSection:Toggle({
+    Title = "FLY 2",
     Default = true
     },
     function(val)
