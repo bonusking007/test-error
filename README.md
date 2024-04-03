@@ -470,7 +470,7 @@ end)
 
 mainSection:Toggle({
     Title = "fly",
-    Default = false
+    Default = true
     },
     function(val)
         flying = not flying
@@ -486,7 +486,7 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "autofarm",
-    Default = false
+    Default = true
     },
     function(val)
         for i,v2 in pairs(getgc(true)) do
@@ -547,7 +547,7 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "autospawn",
-    Default = false
+    Default = true
     },
     function(val)
         while wait(0.2) do
