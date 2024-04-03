@@ -501,11 +501,12 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "FLY NEW",
-    Default = false
+    Default = true
     },
     function(val)
         flying = not flying
         if val then
+            wait(10)
             sFLY(true)
         else
             NOFLY()
@@ -533,7 +534,7 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "Teleport",
-    Default = false
+    Default = true
     },
     function(val)
         for i,v2 in pairs(getgc(true)) do
