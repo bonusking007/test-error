@@ -754,8 +754,8 @@ CombatKillauraSection:Toggle({
     },
     function(val)
         if val then
-            while true do
-                game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game)
+            while wait(10) do
+                print("HI")
             end
         end
     end
@@ -904,13 +904,7 @@ CombatSilentaimSection:Toggle({
 						    end
 						
 						    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
-                            wait(2)
-                            local baseplate = Instance.new("Part")
-                            baseplate.Parent = workspace
-                            baseplate.Size = Vector3.new(1000,0.5,1000)
-                            baseplate.Anchored = true
-                            baseplate.Name = "Baseplate"
-                            baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
+                            wait(1)
                         end
                     else
                         wait(2)
