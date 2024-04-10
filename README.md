@@ -1,4 +1,4 @@
---- main for mobile
+--- main
 
 --- real script
 
@@ -468,18 +468,29 @@ end
 game.Players.PlayerAdded:Connect(playerAdded)
 end)
 
-mainSection:Keybind({
-    Title = "sky Keybind",
-    Default = Enum.KeyCode.L
+mainSection:Toggle({
+    Title = "Inf Parry",
+    Default = false
     },
     function(val)
-        loadstring(game:HttpGet("https://pastebin.com/QdexRDJJ"))()
+        for i,v in pairs(getgc(true)) do
+            if type(v) == "table" and rawget(v, "PARRY_COOLDOWN_IN_SECONDS") and rawget(v, "PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY") then
+                if val then
+                    v.PARRY_COOLDOWN_IN_SECONDS = 0
+                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0
+                else
+                    v.PARRY_COOLDOWN_IN_SECONDS = 3
+                    v.PARRY_COOLDOWN_IN_SECONDS_AFTER_SUCCESSFUL_PARRY = 0.33
+                end
+            end
+        end
     end
 )
 
-mainSection:Keybind({
-    Title = "Spawn Keybind",
-    Default = Enum.KeyCode.J
+
+mainSection:Toggle({
+    Title = "Spam Jump",
+    Default = false
     },
     function(val)
         while wait(0.2) do
@@ -488,16 +499,28 @@ mainSection:Keybind({
     end
 )
 
-playerSection:Toggle({
-    Title = "Spam Jump",
+mainSection:Toggle({
+    Title = "Inf Stamina",
     Default = false
     },
     function(val)
-        print("hi")
+        for i,v in pairs(getgc(true)) do
+            if typeof(v) == "table" and rawget(v, "_setStamina") then
+                local old = v._setStamina
+                v._setStamina = function(among, us)
+                    if val then
+                        among._stamina = math.huge
+                        among._staminaChangedSignal:Fire(150)
+                    else
+                        return old(among, us)
+                    end
+                end
+            end
+         end
     end
 )
 
-playerSection:Toggle({
+mainSection:Toggle({
     Title = "No Fall Damage",
     Default = true
     },
@@ -535,14 +558,14 @@ mainSection:Toggle({
 
 mainSection:Toggle({
     Title = "No Utility Damage",
-    Default = false
+    Default = true
     },
     function(val)
         antidamage = val
     end
 )
 
-playerSection:Toggle({
+mainSection:Toggle({
     Title = "Auto Spawn",
     Default = false
     },
@@ -635,7 +658,9 @@ playerSection:Toggle({
     Default = false
     },
     function(val)
-        noclip = val
+        while wait(3) do
+            noclip = val
+        end
     end
 )
 
@@ -657,7 +682,7 @@ playerSection:Toggle({
     end
 )
 
-mainSection:Toggle({
+playerSection:Toggle({
     Title = "Fly",
     Default = false
     },
@@ -671,7 +696,7 @@ mainSection:Toggle({
     end
 )
 
-mainSection:Keybind({
+playerSection:Keybind({
     Title = "Fly Keybind",
     Default = Enum.KeyCode.K
     },
@@ -724,60 +749,14 @@ CombatKillauraSection:Toggle({
 -- reach here
 
 CombatKillauraSection:Toggle({
-    Title = "Reach (broken)",
+    Title = "auto hit",
     Default = false
     },
     function(val)
-        Reaching = val
-        if val == false then return end
-        local character = game.Players.LocalPlayer.Character
-        local torso = character.Torso
-        local rightarm = character["Right Arm"]
-        local rightshoulder = torso["Right Shoulder"]
-        if rightshoulder and rightshoulder.Enabled == true then
-            local rightshoulderclone = rightshoulder:Clone()
-            rightshoulderclone.Enabled = false
-            rightshoulder:Destroy()
-            rightshoulderclone.Parent = torso
-        end
-    
-        for i,v in pairs(game.Players.LocalPlayer.Backpack:GetDescendants()) do
-            if v:IsA("BasePart") then
-                v.Massless = true
+        if val then
+            while true do
+                game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game)
             end
-        end
-        if rightarm:FindFirstChild("RagdollBallSocket") then
-            rightarm.RagdollBallSocket.Enabled = false
-        end
-        while Reaching do
-            sethiddenproperty(rightarm,"AssemblyLinearVelocity",Vector3.new(100,100,100))
-            rightarm.Velocity = Vector3.new(100,100,100)
-            if torso:FindFirstChild("Right Shoulder") then
-                local rightarm = character["Right Arm"]
-                local rightshoulder = torso["Right Shoulder"]
-    
-                local rightshoulderclone = rightshoulder:Clone()
-                rightshoulderclone.Enabled = false
-                rightshoulder:Destroy()
-                rightshoulderclone.Parent = torso
-            end
-    
-            local target = getClosest()
-
-            -- if reachchoice == "closest to player" then
-            --     target = getClosest()
-            -- elseif reachchoice == "closest to mouse" then
-            --     target = getClosestToMouse()
-            --     bruh.Adornee = target.Character
-            -- else
-            --     target = getClosest()
-            -- end
-            if target.Character:FindFirstChild("Head") and (character.Head.Position - target.Character.Head.Position).magnitude < 100 then
-                rightarm.CFrame = target.Character.Head.CFrame * CFrame.new(math.random(-0,0),0,0)
-            elseif character:FindFirstChild("Head") then
-                rightarm.CFrame = character.Head.CFrame * CFrame.new(math.random(-0,0),0,0)
-            end
-            game:GetService("RunService").Heartbeat:wait()
         end
     end
 )
@@ -885,7 +864,61 @@ CombatSilentaimSection:Toggle({
     Title = "Auto farm (ALT)",
     Default = false
     },
-    print(hi)
+    function(val)
+        for i,v2 in pairs(getgc(true)) do
+            if val then
+                while task.wait(3) do
+                    if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+                        wait(0.2)
+                        local player = game.Players.LocalPlayer
+                        local character = player.Character or player.CharacterAdded:Wait()
+                        local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+                        local function changeCFrameY(newY)
+                            local currentCFrame = humanoidRootPart.CFrame
+                            local position = currentCFrame.Position
+                            local rotation = currentCFrame - position
+                            local newPosition = Vector3.new(position.X, newY, position.Z)
+                            local newCFrame = CFrame.new(newPosition) * rotation
+                            humanoidRootPart.CFrame = newCFrame
+                        end
+                        changeCFrameY(-200)
+                        if Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+						    function TP(gotoCFrame)
+							    pcall(function()
+								    game.Players.LocalPlayer.Character.Humanoid.Sit = false
+							    end)
+							    if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
+								    pcall(function() 
+									    tween:Cancel()
+								    end)
+								    game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
+							    else
+								    local tween_s = game:service"TweenService"
+								    local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
+								    local tween, err = pcall(function()
+									    tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
+									    tween:Play()
+								    end)
+								    if not tween then return err end
+							    end
+						    end
+						
+						    TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
+                            wait(2)
+                            local baseplate = Instance.new("Part")
+                            baseplate.Parent = workspace
+                            baseplate.Size = Vector3.new(1000,0.5,1000)
+                            baseplate.Anchored = true
+                            baseplate.Name = "Baseplate"
+                            baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-7,0)
+                        end
+                    else
+                        wait(2)
+                    end
+                end
+            end
+        end
+    end
 )
 
 CombatSilentaimSection:Toggle({
