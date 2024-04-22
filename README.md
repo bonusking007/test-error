@@ -3914,12 +3914,39 @@ AASec:AddButton("SPAWN",function()
     end
 end)
 
-AASec:AddButton("REJOIN",function()
-    game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
-end)
-
 AASec:AddButton("RESET",function()
     game.Players.LocalPlayer.Character.Humanoid.Health = 0
+end)
+
+AASec:AddButton("FPSBOOST",function()
+    _G.Settings = {
+        Players = {
+            ["Ignore Me"] = true, -- Ignore your Character
+            ["Ignore Others"] = true-- Ignore other Characters
+        },
+        Meshes = {
+            Destroy = false, -- Destroy Meshes
+            LowDetail = true -- Low detail meshes (NOT SURE IT DOES ANYTHING)
+        },
+        Images = {
+            Invisible = true, -- Invisible Images
+            LowDetail = false, -- Low detail images (NOT SURE IT DOES ANYTHING)
+            Destroy = false, -- Destroy Images
+        },
+        ["No Particles"] = true, -- Disables all ParticleEmitter, Trail, Smoke, Fire and Sparkles
+        ["No Camera Effects"] = true, -- Disables all PostEffect's (Camera/Lighting Effects)
+        ["No Explosions"] = true, -- Makes Explosion's invisible
+        ["No Clothes"] = true, -- Removes Clothing from the game
+        ["Low Water Graphics"] = true, -- Removes Water Quality
+        ["No Shadows"] = true, -- Remove Shadows
+        ["Low Rendering"] = true, -- Lower Rendering
+        ["Low Quality Parts"] = true -- Lower quality parts
+    }
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()    
+end)
+
+AASec:AddButton("REJOIN",function()
+    game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
 end)
 
 local AABindLOL = AASec:AddToggle("Enable", false, function(parameter)
@@ -4091,9 +4118,133 @@ spawn(function()
     end)
 end)
 
-UtilitiesSec:AddToggle("rejoin", false, function(parameter)
+UtilitiesSec:AddToggle("noslow", false, function(parameter)
     nn_noslowdown = parameter
 end)
+
+UtilitiesSec:AddButton("autofarm",function()
+    while task.wait(3) do
+        if game.Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+            wait(0.2)
+            local player = game.Players.LocalPlayer
+            local character = player.Character or player.CharacterAdded:Wait()
+            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+            local function changeCFrameY(newY)
+                local currentCFrame = humanoidRootPart.CFrame
+                local position = currentCFrame.Position
+                local rotation = currentCFrame - position
+                local newPosition = Vector3.new(position.X, newY, position.Z)
+                local newCFrame = CFrame.new(newPosition) * rotation
+                humanoidRootPart.CFrame = newCFrame
+            end
+            changeCFrameY(-200)
+            if game.Players.LocalPlayer.PlayerGui.RoactUI:FindFirstChild("BottomStatusIndicators") then
+                function TP(gotoCFrame)
+                    pcall(function()
+                        game.Players.LocalPlayer.Character.Humanoid.Sit = false
+                    end)
+                    if (game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude <= 100 then
+                        pcall(function() 
+                            tween:Cancel()
+                        end)
+                        game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.CFrame = gotoCFrame
+                    else
+                        local tween_s = game:service"TweenService"
+                        local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - gotoCFrame.Position).Magnitude/75, Enum.EasingStyle.Linear)
+                        local tween, err = pcall(function()
+                            tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = gotoCFrame})
+                            tween:Play()
+                        end)
+                        if not tween then return err end
+                    end
+                end
+            
+                TP(CFrame.new(0.8385264873504639, -200.213294982910156, -33.203948974609375))
+                wait(1)
+            end
+        else
+            wait(2)
+        end
+    end
+end)
+
+UtilitiesSec:AddButton("baseplate",function()
+    local baseplate = Instance.new("Part")
+    baseplate.Parent = workspace
+    baseplate.Size = Vector3.new(5,0.3,5)
+    baseplate.Anchored = true
+    baseplate.Name = "Baseplate"
+    baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-3,0)
+end)
+
+UtilitiesSec:AddButton("spawn",function()
+    while wait(0.2) do
+        game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.Space,false,game) 
+    end
+end)
+
+UtilitiesSec:AddButton("boostfps",function()
+    _G.Settings = {
+        Players = {
+            ["Ignore Me"] = true, -- Ignore your Character
+            ["Ignore Others"] = true-- Ignore other Characters
+        },
+        Meshes = {
+            Destroy = false, -- Destroy Meshes
+            LowDetail = true -- Low detail meshes (NOT SURE IT DOES ANYTHING)
+        },
+        Images = {
+            Invisible = true, -- Invisible Images
+            LowDetail = false, -- Low detail images (NOT SURE IT DOES ANYTHING)
+            Destroy = false, -- Destroy Images
+        },
+        ["No Particles"] = true, -- Disables all ParticleEmitter, Trail, Smoke, Fire and Sparkles
+        ["No Camera Effects"] = true, -- Disables all PostEffect's (Camera/Lighting Effects)
+        ["No Explosions"] = true, -- Makes Explosion's invisible
+        ["No Clothes"] = true, -- Removes Clothing from the game
+        ["Low Water Graphics"] = true, -- Removes Water Quality
+        ["No Shadows"] = true, -- Remove Shadows
+        ["Low Rendering"] = true, -- Lower Rendering
+        ["Low Quality Parts"] = true -- Lower quality parts
+    }
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/CasperFlyModz/discord.gg-rips/main/FPSBooster.lua"))()
+end)
+
+UtilitiesSec:AddButton("noclip",function()
+    --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local Noclip = nil
+local Clip = nil
+
+function noclip()
+	Clip = false
+	local function Nocl()
+		if Clip == false and game.Players.LocalPlayer.Character ~= nil then
+			for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+				if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
+					v.CanCollide = false
+				end
+			end
+		end
+		wait(0.21) -- basic optimization
+	end
+	Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
+end
+
+function clip()
+	if Noclip then Noclip:Disconnect() end
+	Clip = true
+end
+
+noclip() -- to toggle noclip() and clip()
+end)
+
+UtilitiesSec:AddButton("rejoin",function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
+end)
+
+
 
 spawn(function()
     runservice.Heartbeat:Connect(function()
@@ -4102,6 +4253,7 @@ spawn(function()
         end
     end)
 end)
+
 
 AimingLockSection:AddToggle("Enabled", false, function(parameter)
     aimbotenab = parameter
