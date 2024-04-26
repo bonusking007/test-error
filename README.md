@@ -4383,6 +4383,44 @@ end
 forceFreefall()
 end)
 
+UtilitiesSec:AddButton("autoequiptool",function()
+    -- Get necessary services
+local Players = game:GetService("Players")
+
+-- Function to equip the tool named "Baton" from the backpack
+local function autoEquipBaton()
+    local player = Players.LocalPlayer
+    local backpack = player.Backpack
+
+    if backpack then
+        for _, item in ipairs(backpack:GetChildren()) do
+            if item:IsA("Tool") and item.Name == "Baton" then
+                player.Character.Humanoid:EquipTool(item)
+                return true -- Return true if tool is found and equipped
+            end
+        end
+    end
+    return false -- Return false if tool is not found
+end
+
+-- Function to continuously check for and equip the "Baton" tool
+local function loopCheckAndEquipBaton()
+    while true do
+        autoEquipBaton()
+        -- Wait for a short duration before checking again
+        wait(1)
+    end
+end
+
+-- Call the loopCheckAndEquipBaton function
+loopCheckAndEquipBaton()
+
+end)
+
+UtilitiesSec:AddButton("autohit",function()
+    print("hi")
+end)
+
 UtilitiesSec:AddButton("rejoin",function()
     loadstring(game:HttpGet("https://pastebin.com/raw/1gtVMUz3"))()
 end)
