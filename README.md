@@ -4349,7 +4349,7 @@ UtilitiesSec:AddButton("feetbase",function()
     game:GetService("Workspace"):FindFirstChild("Noclip").CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame * CFrame.new(0,-3,0)
     end
     _G.Noclip = true
-    while _G.Noclip do wait(0.7)
+    while _G.Noclip do wait(0.4)
         pcall(function()
             Noclip()
         end)
@@ -4419,6 +4419,22 @@ end)
 
 UtilitiesSec:AddButton("autohit",function()
     print("hi")
+end)
+
+UtilitiesSec:AddButton("whitescreen E",function()
+    local enabled = true
+
+local function toggle3DRendering()
+    enabled = not enabled
+    game:GetService("RunService"):Set3dRenderingEnabled(enabled)
+    print("3D rendering enabled:", enabled)
+end
+
+game:GetService("UserInputService").InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.E then
+        toggle3DRendering()
+    end
+end)
 end)
 
 UtilitiesSec:AddButton("rejoin",function()
