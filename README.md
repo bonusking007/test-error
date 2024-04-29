@@ -3812,7 +3812,7 @@ local FlightBindxdxd = MovementTab:AddToggle("Flight", true, function(parameter)
             spawn(function()
                 pcall(function()
                     local speed = FlySpeed
-                    local velocity = Vector3.new(0, 1.7, 0)
+                    local velocity = Vector3.new(0, 7, 0)
                     local UserInputService = game:GetService("UserInputService")
     
                     if UserInputService:IsKeyDown(Enum.KeyCode.W) then
