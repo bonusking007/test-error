@@ -4215,12 +4215,22 @@ UtilitiesSec:AddButton("autofarm",function()
 end)
 
 UtilitiesSec:AddButton("baseplate",function()
-    local baseplate = Instance.new("Part")
-    baseplate.Parent = workspace
-    baseplate.Size = Vector3.new(5,0.3,5)
-    baseplate.Anchored = true
-    baseplate.Name = "Baseplate"
-    baseplate.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position + Vector3.new(0,-3,0)
+    --down
+local baseplate = Instance.new("Part")
+baseplate.Parent = workspace
+baseplate.Size = Vector3.new(3, 0, 3)
+baseplate.Anchored = true
+baseplate.Name = "Baseplate"
+local desiredCFrame = CFrame.new(0.8385264873504639, -203.13294982910156, -33.203948974609375)
+baseplate.Position = desiredCFrame.Position
+--up
+local baseplate = Instance.new("Part")
+baseplate.Parent = workspace
+baseplate.Size = Vector3.new(7, 0, 7)
+baseplate.Anchored = true
+baseplate.Name = "Baseplate"
+local desiredCFrame = CFrame.new(0.8385264873504639, -198.213294982910156, -33.203948974609375)
+baseplate.Position = desiredCFrame.Position
 end)
 
 UtilitiesSec:AddButton("spawn",function()
@@ -4415,6 +4425,14 @@ end
 -- Call the loopCheckAndEquipBaton function
 loopCheckAndEquipBaton()
 
+end)
+
+UtilitiesSec:AddButton("reset",function()
+    game.Players.LocalPlayer.Character.Humanoid.Health = 0
+end)
+
+UtilitiesSec:AddButton("Boxcover",function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/uptZSAjG"))()
 end)
 
 UtilitiesSec:AddButton("autohit",function()
